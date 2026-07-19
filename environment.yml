@@ -1,0 +1,23 @@
+name: xray-report
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pytorch=2.5.1
+  - torchvision
+  - numpy=1.26.4
+  - pandas
+  - pillow
+  - scikit-learn
+  - pyyaml
+  - tqdm
+  - matplotlib
+  - jupyter
+  - pip
+  - pip:
+      - boto3
+      - fastapi
+      - uvicorn
+      - -e .
