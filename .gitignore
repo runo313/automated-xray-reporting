@@ -183,6 +183,7 @@ cython_debug/
 # Data and model artifacts 
 data/raw/
 data/processed/
+data/images/
 checkpoints/
 *.pt
 *.pth

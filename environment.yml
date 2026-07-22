@@ -2,11 +2,13 @@ name: xray-report
 channels:
   - pytorch
   - conda-forge
+  - nvidia
   - defaults
 dependencies:
   - python=3.11
   - pytorch=2.5.1
   - torchvision
+  - pytorch-cuda=12.1
   - numpy=1.26.4
   - pandas
   - pillow
@@ -20,4 +22,5 @@ dependencies:
       - boto3
       - fastapi
       - uvicorn
-      - -e .
+      - -e 
+      - redivis
