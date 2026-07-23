@@ -17,6 +17,8 @@ dependencies:
   - tqdm
   - matplotlib
   - jupyter
+  - pyarrow
+  - fastparquet
   - pip
   - pip:
       - boto3

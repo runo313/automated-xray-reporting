@@ -1,21 +1,44 @@
+#!/usr/bin/env python3
 """
-Vocabulary class for the report decoder.
-
-Follows the same fixed-special-token-index pattern used in the HW3
-seq2seq assignment: <pad>=0, <bos>=1, <eos>=2, <unk>=3.
-Fill in build_vocab() once IU X-Ray report text is available.
+Tokenization, vocabulary building, and text encoding/decoding for the report-generation decoder.
+Provides functions to tokenize radiology impression text, build a
+word-level vocabulary from a training corpus, and encode/decode text
+to and from fixed-length integer sequences.
 """
 import pandas as pd
 import re
-def read_parquet_train_text():
-    data= pd.read_parquet('../../../data/chexpert_plus_clean.parquet')
-    train_set = data[(data['split']=='train')]
-    src_train=train_set['section_impression'].values.tolist()
-    return src_train
+import argparse
+import pickle
 
 PUNCT_TO_KEEP = ['.', ',', '(', ')', ':', '/', '-', '"']
 
+def read_parquet_train_text(parquet_path):
+    """
+     Load the merged labels/text parquet file and return the training split's section_impression text as a list of strings.
+
+     Args:
+        parquet_path (str or Path): Path to the merged parquet file
+            containing at least 'split' and 'section_impression' columns.
+
+    Returns:
+        list[str]: Raw impression text for every row where split == 'train'.
+    """
+    data= pd.read_parquet(parquet_path)
+    train_set = data[(data['split']=='train')]
+    return train_set['section_impression'].values.tolist()
+    
+
+
 def tokenize(text):
+    """
+    Tokenize a single radiology impression string into a list of word and punctuation tokens.
+
+    Args:
+        text (str): Raw section_impression text for one report.
+
+    Returns:
+        list[str]: Ordered list of lowercase word and punctuation tokens.
+    """
     text = text.lower().strip()
     text = text.replace('\n', ' ')
     text = text.replace('&lt;deleted&gt;', ' ')
@@ -30,6 +53,10 @@ def tokenize(text):
 
 
 def build_vocab(min_freq,tokenized_text):
+    """
+    Build a word-level vocabulary from tokenized text.
+    Assigns indices to every token that appears at least `min_freq` times.
+    """
     PAD, BOS, EOS, UNK = "<pad>", "<bos>", "<eos>", "<unk>"
     token_to_idx= {PAD: 0, BOS: 1, EOS: 2, UNK: 3}
     idx_to_token = {token:index for index, token in token_to_idx.items()}
@@ -47,6 +74,9 @@ def build_vocab(min_freq,tokenized_text):
     return {'token_to_idx': token_to_idx, 'idx_to_token': idx_to_token}
 
 def encode(tokens, token_to_idx, max_len):
+    """
+     Convert a list of tokens into a fixed-length list of vocabulary indices.
+    """
     ids = [token_to_idx.get('<bos>')]
     for tok in tokens:
         ids.append(token_to_idx.get(tok, token_to_idx['<unk>']))
@@ -59,6 +89,7 @@ def encode(tokens, token_to_idx, max_len):
     return ids
 
 def decode(ids, idx_to_token):
+    """Convert a list of vocabulary indices back into a readable string."""
     tokens = []
     for i in ids:
         token = idx_to_token[i]
@@ -69,17 +100,29 @@ def decode(ids, idx_to_token):
         tokens.append(token)
     return ' '.join(tokens)
 
-src_train=read_parquet_train_text()
-train_tokens= [tokenize(t) for t in src_train]
-print(f"Total sentence :{len(train_tokens)}")
-vocab=build_vocab(5,train_tokens)
-sample = src_train[0]
-tokens = tokenize(sample)
-ids = encode(tokens, vocab['token_to_idx'], max_len=50)
-decoded = decode(ids, vocab['idx_to_token'])
+def save_vocab(vocab, path):
+    """Save a vocabulary dict to disk via pickle."""
+    with open(path, 'wb') as f:
+        pickle.dump(vocab, f)
 
-print("ORIGINAL: ", sample)
-print("TOKENS:   ", tokens)
-print("IDS:      ", ids)
-print("DECODED:  ", decoded)
+
+def load_vocab(path):
+    """Load a vocabulary dict previously saved with save_vocab."""
+    with open(path, 'rb') as f:
+        return pickle.load(f)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Build and save a vocabulary from training report text.")
+    parser.add_argument('--parquet-path', required=True, help="Path to merged labels parquet file")
+    parser.add_argument('--vocab-out', required=True, help="Path to save the built vocabulary (pickle)")
+    parser.add_argument('--min-freq', type=int, default=5, help="Minimum token frequency to include in vocab")
+    args = parser.parse_args()
+
+    src_train = read_parquet_train_text(args.parquet_path)
+    train_tokens = [tokenize(t) for t in src_train]
+    print(f"Total sentence: {len(train_tokens)}")
+    vocab = build_vocab(args.min_freq, train_tokens)
+    save_vocab(vocab, args.vocab_out)
+    print(f"vocab saved to {args.vocab_out}")
+
 
