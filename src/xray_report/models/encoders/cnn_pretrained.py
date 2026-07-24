@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
 import torch
 import torch.nn as nn
 import torchvision
 from src.xray_report.models.encoders.base import BaseEncoder
+
 class PretrainedCNNEncoder(BaseEncoder, nn.Module):
     def __init__(self):
         super().__init__()
