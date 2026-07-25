@@ -32,3 +32,37 @@ def compute_pos_weight(df, label_cols):
         weights.append(weight)
 
     return torch.tensor(weights, dtype=torch.float32)
+
+class MaskedCrossEntropyLoss(nn.Module):
+    """
+    Token-level cross-entropy loss that ignores padding positions.
+    Used for training the decoder: padded positions in the target sequence
+    contribute nothing to the loss or gradient.
+    """
+    def __init__(self, pad_idx=0):
+        """
+        Args:
+            pad_idx: Vocabulary index used for the <pad> token.
+        """
+        super().__init__()
+        self.pad_idx = pad_idx
+        self.ce = nn.CrossEntropyLoss(reduction='none')
+
+    def forward(self, logits, targets):
+        """
+        Args:
+            logits: decoder output logits.
+            targets: ground-truth token ids.
+
+        Returns: Scalar loss, averaged only over non-pad token positions.
+        """
+        batch, seq_len, vocab_size = logits.shape
+        logits_flat = logits.reshape(batch * seq_len, vocab_size)
+        targets_flat = targets.reshape(batch * seq_len)
+
+        per_token_loss = self.ce(logits_flat, targets_flat)   # (batch * seq_len,)
+        mask = (targets_flat != self.pad_idx).float()
+        masked_loss = per_token_loss * mask
+        return masked_loss.sum() / mask.sum().clamp(min=1)
+
+    
