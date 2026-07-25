@@ -106,38 +106,4 @@ class AttentionDecoder(nn.Module):
         attn_weights = torch.stack(all_weights, dim=1)     # (batch, seq_len, num_regions)
 
         return generated, attn_weights
-if __name__ == "__main__":
-    import torch
-
-    batch_size = 4
-    num_regions = 49
-    feature_dim = 2048
-    vocab_size = 100      # small fake vocab for the test
-    num_labels = 14
-    bos_idx, eos_idx = 1, 2
-
-    decoder = AttentionDecoder(
-        vocab_size=vocab_size,
-        embed_dim=32,
-        hidden_size=64,
-        findings_embed_dim=16,
-        num_labels=num_labels,
-        feature_dim=feature_dim,
-    )
-
-    dummy_enc_output = torch.randn(batch_size, num_regions, feature_dim)
-    dummy_labels = torch.rand(batch_size, num_labels)
-
-    generated, attn_weights = decoder.generate(
-        dummy_enc_output, dummy_labels, max_len=20, bos_idx=bos_idx, eos_idx=eos_idx
-    )
-
-    print(f"generated:    {generated.shape}")
-    print(f"attn_weights: {attn_weights.shape}")
-    print(f"sample sequence: {generated[0].tolist()}")
-
-    assert generated.shape[0] == batch_size
-    assert generated.shape[1] <= 20
-    assert attn_weights.shape[0] == batch_size
-    assert attn_weights.shape[2] == num_regions
-    print("generate() smoke test OK")
+    
