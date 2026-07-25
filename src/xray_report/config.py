@@ -17,3 +17,4 @@ def redirect_output(log_path):
     sys.stdout = log_file
     sys.stderr = log_file
     return log_file
+
