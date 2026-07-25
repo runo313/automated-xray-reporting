@@ -67,3 +67,77 @@ class AttentionDecoder(nn.Module):
         attn_weights = torch.stack(all_weights, dim=1)
         
         return logits, attn_weights
+
+    def generate(self, enc_output, labels, max_len, bos_idx, eos_idx):
+        """
+        generate a token sequence, without teacher forcing
+        Returns:
+            generated: (batch, seq_len) — generated token ids (excludes <bos>)
+            attn_weights: (batch, seq_len, num_regions) — attention weights per step
+        """
+        batch_size = enc_output.shape[0]
+        device = enc_output.device
+
+        findings_embed = self.findings(labels)
+        hidden = torch.zeros(batch_size, self.rnn.hidden_size, device=device)
+
+        input_token = torch.full((batch_size,), bos_idx, dtype=torch.long, device=device)
+
+        generated = []
+        all_weights = []
+        finished = torch.zeros(batch_size, dtype=torch.bool, device=device)
+
+        for t in range(max_len):
+            logits, hidden, weights = self.forward(input_token, hidden, enc_output, findings_embed)
+
+            next_token = logits.argmax(dim=-1)               # greedy decoding
+            next_token = torch.where(finished, torch.tensor(eos_idx, device=device), next_token)
+
+            generated.append(next_token)
+            all_weights.append(weights)
+
+            finished = finished | (next_token == eos_idx)
+            input_token = next_token
+
+            if finished.all():
+                break
+
+        generated = torch.stack(generated, dim=1)         # (batch, seq_len)
+        attn_weights = torch.stack(all_weights, dim=1)     # (batch, seq_len, num_regions)
+
+        return generated, attn_weights
+if __name__ == "__main__":
+    import torch
+
+    batch_size = 4
+    num_regions = 49
+    feature_dim = 2048
+    vocab_size = 100      # small fake vocab for the test
+    num_labels = 14
+    bos_idx, eos_idx = 1, 2
+
+    decoder = AttentionDecoder(
+        vocab_size=vocab_size,
+        embed_dim=32,
+        hidden_size=64,
+        findings_embed_dim=16,
+        num_labels=num_labels,
+        feature_dim=feature_dim,
+    )
+
+    dummy_enc_output = torch.randn(batch_size, num_regions, feature_dim)
+    dummy_labels = torch.rand(batch_size, num_labels)
+
+    generated, attn_weights = decoder.generate(
+        dummy_enc_output, dummy_labels, max_len=20, bos_idx=bos_idx, eos_idx=eos_idx
+    )
+
+    print(f"generated:    {generated.shape}")
+    print(f"attn_weights: {attn_weights.shape}")
+    print(f"sample sequence: {generated[0].tolist()}")
+
+    assert generated.shape[0] == batch_size
+    assert generated.shape[1] <= 20
+    assert attn_weights.shape[0] == batch_size
+    assert attn_weights.shape[2] == num_regions
+    print("generate() smoke test OK")
