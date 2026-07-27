@@ -1,0 +1,16 @@
+torch==2.5.1
+torchvision
+numpy==1.26.4
+pandas
+pillow
+scikit-learn
+pyyaml
+tqdm
+matplotlib
+jupyter
+pyarrow
+fastparquet
+nltk
+fastapi
+uvicorn
+redivis

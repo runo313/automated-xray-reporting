@@ -22,7 +22,7 @@ dependencies:
   - pip
   - nltk
   - pip:
-      - boto3
+      # - boto3
       - fastapi
       - uvicorn
       - -e 
