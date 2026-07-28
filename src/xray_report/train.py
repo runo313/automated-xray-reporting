@@ -32,8 +32,8 @@ class FitModel():
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.optimizer = optimizer
-        self.bce_loss = bce_loss
-        self.ce_loss = ce_loss
+        self.bce_loss = bce_loss.to(self.device)
+        self.ce_loss = ce_loss.to(self.device)
         self.lambda_weight= lambda_weight
 
         self.checkpoint_dir = checkpoint_dir
