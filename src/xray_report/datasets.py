@@ -33,7 +33,9 @@ class CheXpertDataset(Dataset):
     def __getitem__(self, idx):
         """Return one training example as (image, labels, mask, text_ids)."""
         row = self.df.iloc[idx]
-        image_path = f"{self.image_root}/{row['path_to_image']}"
+        raw_path = row['path_to_image']
+        clean_path = raw_path.replace('train/', '', 1).replace('valid/', '', 1)
+        image_path = f"{self.image_root}/{clean_path}"
         image= Image.open(image_path).convert('RGB')
 
         if self.transform:
