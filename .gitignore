@@ -197,3 +197,4 @@ mlruns/
 # OS
 .DS_Storexray-env/
 data/test_images/
+.DS_Store

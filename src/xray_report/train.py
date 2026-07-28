@@ -19,8 +19,8 @@ from src.xray_report.models.losses import MaskedBCELoss, MaskedCrossEntropyLoss,
 from src.xray_report.models.model import XRayReportModel
 
 class FitModel():
-    def __init__(self,eta,n_iter, batch_size, random_state, model,
-                  train_loader, val_loader, optimizer, bce_loss, ce_loss, lambda_weight, checkpoint_dir=None):
+    def __init__(self,n_iter, random_state, model,train_loader, val_loader,
+                  optimizer, bce_loss, ce_loss, lambda_weight, checkpoint_dir=None):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f'Using device: {self.device}')
 
