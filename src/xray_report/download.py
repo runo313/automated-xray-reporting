@@ -69,6 +69,7 @@ def run_download(paths, table_ref, local_root, image_size, max_workers, log_ever
             else:
                 fail_count += 1
                 failed_paths.append((remote_path, status))
+                print(f"FAILED: {remote_path} — {status}", flush=True) # added 
 
             if (i + 1) % log_every == 0 or (i + 1) == total:
                 elapsed = time.time() - start
