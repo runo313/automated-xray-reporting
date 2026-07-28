@@ -195,4 +195,5 @@ wandb/
 mlruns/
 
 # OS
-.DS_Store
+.DS_Storexray-env/
+data/test_images/
