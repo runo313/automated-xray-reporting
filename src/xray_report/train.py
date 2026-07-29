@@ -75,7 +75,7 @@ class FitModel():
             self.val_losses.append(avg_val_loss)
 
             epoch_time = time.time() - epoch_start
-            print(f"Epoch {epoch+1}/{self.n_iter} — loss: {avg_loss:.4f} — time: {epoch_time:.1f}s")
+            print(f"Epoch {epoch+1}/{self.n_iter} — train_loss: {avg_loss:.4f} — val_loss: {avg_val_loss:.4f} — time: {epoch_time:.1f}s")
 
             if self.checkpoint_dir:
                 self.save_checkpoint(epoch, avg_val_loss, filename="last.pt")
