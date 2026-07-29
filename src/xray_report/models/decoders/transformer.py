@@ -42,3 +42,43 @@ class TransformerDecoder(nn.Module):
         logits = logits[:, 1:, :]
 
         return logits
+
+    def generate(self, enc_output, labels, max_len, bos_idx, eos_idx):
+        """
+            Generate a token sequence, without teacher forcing.
+
+            Args:
+                enc_output: encoder spatial features
+                labels: findings vector to condition on
+                max_len: maximum number of tokens to generate
+                bos_idx: vocabulary index of <bos>
+                eos_idx: vocabulary index of <eos>
+
+            Returns: generated token ids
+        """
+        batch_size = enc_output.shape[0]
+        device = enc_output.device
+
+        generated = torch.full((batch_size, 1), bos_idx, dtype=torch.long, device=device)
+        finished = torch.zeros(batch_size, dtype=torch.bool, device=device)
+
+        for t in range(max_len - 1):
+            logits = self.forward(generated, enc_output, labels)   # (batch, current_len, vocab_size)
+            next_token = logits[:, -1, :].argmax(dim=-1)            # only care about the newest position
+
+            next_token = torch.where(finished, torch.tensor(eos_idx, device=device), next_token)
+            generated = torch.cat([generated, next_token.unsqueeze(1)], dim=1)
+
+            finished = finished | (next_token == eos_idx)
+            if finished.all():
+                break
+
+        return generated
+    def forward_sequence(self, tgt_seq, enc_output, labels):
+        """
+        takes the full tgt_seq (including <bos>/<eos>), handles the input/target
+        shift internally, and returns (logits, attn_weights) for compatibility.
+        """
+        decoder_input = tgt_seq[:, :-1]   # drop last token, nothing to predict after it
+        logits = self.forward(decoder_input, enc_output, labels)
+        return logits, None
