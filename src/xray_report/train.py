@@ -71,6 +71,8 @@ class FitModel():
                 self.optimizer.step()
 
                 running_loss += loss.item()
+                running_cls_loss += cls_loss.item()
+                running_gen_loss += gen_loss.item()
 
             avg_loss = running_loss / len(self.train_loader)
             avg_cls_loss = running_cls_loss / len(self.train_loader)
