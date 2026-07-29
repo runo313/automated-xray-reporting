@@ -17,6 +17,7 @@ from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.decoders.rnn_attention import AttentionDecoder
 from src.xray_report.models.losses import MaskedBCELoss, MaskedCrossEntropyLoss, compute_pos_weight
 from src.xray_report.models.model import XRayReportModel
+from src.xray_report.models.decoders.transformer_decoder import TransformerDecoder
 
 class FitModel():
     def __init__(self,n_iter, random_state, model,train_loader, val_loader,
@@ -133,7 +134,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train the CheXpert automated reporting model.")
     parser.add_argument('--log-dir', default='logs', help="Directory to write training logs")
     parser.add_argument('--encoder-type', default='resnet50', help="Encoder variant, for log naming")
-    parser.add_argument('--decoder-type', default='rnn', help="Decoder variant, for log naming")
+    parser.add_argument('--decoder-type', default='rnn', choices=['rnn', 'transformer'], help="Decoder architecture to use")
     parser.add_argument('--parquet-path', required=True, help="Path to merged labels parquet file")
     parser.add_argument('--vocab-path', required=True, help="Path to saved vocabulary pickle")
     parser.add_argument('--image-root', required=True, help="Root folder containing downloaded images")
@@ -174,14 +175,25 @@ if __name__ == "__main__":
 
     encoder = PretrainedCNNEncoder()
     classifier = ClassifierHead(feature_dim=encoder.feature_dim, num_labels=len(LABEL_COLS))
-    decoder = AttentionDecoder(
-        vocab_size=len(token_to_idx),
-        embed_dim=256,
-        hidden_size=512,
-        findings_embed_dim=64,
-        num_labels=len(LABEL_COLS),
-        feature_dim=encoder.feature_dim,
-    )
+    if args.decoder_type == 'rnn':
+        decoder = AttentionDecoder(
+            vocab_size=len(token_to_idx),
+            embed_dim=256,
+            hidden_size=512,
+            findings_embed_dim=64,
+            num_labels=len(LABEL_COLS),
+            feature_dim=encoder.feature_dim,
+        )
+    elif args.decoder_type == 'transformer':
+        decoder = TransformerDecoder(
+            vocab_size=len(token_to_idx),
+            embed_dim=256,
+            num_heads=8,
+            num_layers=4,
+            num_labels=len(LABEL_COLS),
+            feature_dim=encoder.feature_dim,
+            max_len=args.max_len,
+        )
     model = XRayReportModel(encoder, classifier, decoder)
 
     # losses 
