@@ -42,7 +42,7 @@ class FitModel():
             os.makedirs(checkpoint_dir, exist_ok=True)
 
         self.train_losses=[]
-        self.val_losses_=[]
+        self.val_losses=[]
 
     def fit(self):
         start_time = time.time()
