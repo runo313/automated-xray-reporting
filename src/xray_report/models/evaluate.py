@@ -16,6 +16,7 @@ from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.decoders.rnn_attention import AttentionDecoder
 from src.xray_report.models.model import XRayReportModel
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+from src.xray_report.models.decoders.transformer_decoder import TransformerDecoder
 
 def evaluate_classifier(model, test_loader, device, label_cols):
     """Compute per-label AUC and F1 on the test set."""
@@ -120,6 +121,7 @@ if __name__ == "__main__":
     parser.add_argument('--image-root', required=True)
     parser.add_argument('--log-dir', default='logs')
     parser.add_argument('--batch-size', type=int, default=32)
+    parser.add_argument('--decoder-type', default='rnn', choices=['rnn', 'transformer'])
     args = parser.parse_args()
 
     os.makedirs(args.log_dir, exist_ok=True)
@@ -136,10 +138,16 @@ if __name__ == "__main__":
 
     encoder = PretrainedCNNEncoder()
     classifier = ClassifierHead(feature_dim=encoder.feature_dim, num_labels=len(LABEL_COLS))
-    decoder = AttentionDecoder(
-        vocab_size=len(vocab['token_to_idx']), embed_dim=256, hidden_size=512,
-        findings_embed_dim=64, num_labels=len(LABEL_COLS), feature_dim=encoder.feature_dim,
-    )
+    if args.decoder_type == 'rnn':
+        decoder = AttentionDecoder(
+            vocab_size=len(vocab['token_to_idx']), embed_dim=256, hidden_size=512,
+            findings_embed_dim=64, num_labels=len(LABEL_COLS), feature_dim=encoder.feature_dim,
+        )
+    elif args.decoder_type == 'transformer':
+        decoder = TransformerDecoder(
+            vocab_size=len(vocab['token_to_idx']), embed_dim=256, num_heads=8, num_layers=4,
+            num_labels=len(LABEL_COLS), feature_dim=encoder.feature_dim, max_len=DEFAULT_MAX_LEN,
+        )
     model = XRayReportModel(encoder, classifier, decoder).to(device)
 
     checkpoint = torch.load(args.checkpoint_path, map_location=device)

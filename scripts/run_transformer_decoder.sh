@@ -1,3 +1,4 @@
+#!/bin/bash
 python3 -m src.xray_report.train \
     --parquet-path data/chexpert_plus_clean.parquet \
     --vocab-path data/vocab.pkl \

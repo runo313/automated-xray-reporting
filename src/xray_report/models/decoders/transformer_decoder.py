@@ -73,7 +73,7 @@ class TransformerDecoder(nn.Module):
             if finished.all():
                 break
 
-        return generated
+        return generated, None
     def forward_sequence(self, tgt_seq, enc_output, labels):
         """
         takes the full tgt_seq (including <bos>/<eos>), handles the input/target
