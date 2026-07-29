@@ -1,4 +1,6 @@
 #!/bin/bash
+cd /home/runosiakpebru/automated-xray-reporting
+
 python3 -m src.xray_report.train_classifier_only \
     --parquet-path data/chexpert_plus_clean.parquet \
     --vocab-path data/vocab.pkl \
