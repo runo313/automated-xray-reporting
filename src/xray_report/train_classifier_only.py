@@ -146,8 +146,8 @@ if __name__ == "__main__":
     classifier = ClassifierHead(feature_dim=encoder.feature_dim, num_labels=len(LABEL_COLS))
 
     train_df = df[df['split'] == 'train']
-    pos_weight = compute_pos_weight(train_df, LABEL_COLS)
-    bce_loss = MaskedBCELoss(pos_weight=pos_weight)
+    #pos_weight = compute_pos_weight(train_df, LABEL_COLS)
+    bce_loss = MaskedBCELoss(pos_weight=None)
 
     optimizer = optim.Adam([
         {'params': encoder.parameters(), 'lr': args.encoder_lr},
