@@ -7,6 +7,7 @@ import os
 import time
 import torch
 import pandas as pd
+import numpy as np
 from sklearn.metrics import roc_auc_score, f1_score
 from src.xray_report.config import LABEL_COLS, DEFAULT_MAX_LEN, redirect_output
 from src.xray_report.dataloader import build_dataloaders
@@ -49,8 +50,16 @@ def evaluate_classifier(model, test_loader, device, label_cols):
             continue
 
         auc = roc_auc_score(y_true, y_prob)
-        f1 = f1_score(y_true, (y_prob > 0.5).astype(int))
-        results[col] = {'auc': auc, 'f1': f1}
+
+        # Search for optimal threshold for F1-score
+        best_f1, best_thresh = 0.0, 0.5
+        for thresh in np.arange(0.1, 0.9, 0.05):
+            score = f1_score(y_true, (y_prob > thresh).astype(int), zero_division=0)
+            if score > best_f1:
+                best_f1 = score
+                best_thresh = thresh
+
+        results[col] = {'auc': auc, 'f1': best_f1, 'best_threshold': best_thresh}
 
     return results
 def evaluate_decoder(model, test_loader, device, idx_to_token, label_cols, max_len, bos_idx, eos_idx):

@@ -43,9 +43,9 @@ class CheXpertDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        labels= row[LABEL_COLS].fillna(0.0)
-        mask=(labels != -1.0).astype(float)
-        labels= labels.replace(-1.0, 0.0)
+        labels_series = row[LABEL_COLS].astype(float) # Cast labels explicitly to float first
+        mask = (labels_series != -1.0).astype(float) # Build mask for uncertain labels (-1.0) before replacing them
+        labels = labels_series.replace(-1.0, 0.0).fillna(0.0) # Replace uncertain (-1.0) and NaNs with 0.0
         text_ids = encode(tokenize(row['section_impression']), self.token_to_idx, self.max_len)
         return (image,
                 torch.tensor(labels.values.astype(float), dtype=torch.float32),

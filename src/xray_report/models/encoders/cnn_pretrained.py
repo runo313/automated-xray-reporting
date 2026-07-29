@@ -2,12 +2,13 @@
 import torch
 import torch.nn as nn
 import torchvision
+import torchvision.models as models
 from src.xray_report.models.encoders.base import BaseEncoder
 
 class PretrainedCNNEncoder(BaseEncoder, nn.Module):
     def __init__(self):
         super().__init__()
-        resnet = torchvision.models.resnet50(weights='DEFAULT')
+        resnet = torchvision.models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
         self.backbone = nn.Sequential(*list(resnet.children())[:-2])
         self.feature_dim = 2048
         self.num_regions = 49
