@@ -52,6 +52,8 @@ class FitModel():
             epoch_start = time.time()
             self.model.train()
             running_loss= 0.0
+            running_cls_loss = 0.0
+            running_gen_loss = 0.0
             for images, labels,mask,text_ids in self.train_loader:
                 images = images.to(self.device)
                 labels = labels.to(self.device)
@@ -71,12 +73,18 @@ class FitModel():
                 running_loss += loss.item()
 
             avg_loss = running_loss / len(self.train_loader)
+            avg_cls_loss = running_cls_loss / len(self.train_loader)
+            avg_gen_loss = running_gen_loss / len(self.train_loader)
             self.train_losses.append(avg_loss)
+
             avg_val_loss = self.validate(self.val_loader)
             self.val_losses.append(avg_val_loss)
 
             epoch_time = time.time() - epoch_start
-            print(f"Epoch {epoch+1}/{self.n_iter} — train_loss: {avg_loss:.4f} — val_loss: {avg_val_loss:.4f} — time: {epoch_time:.1f}s")
+            print(f"Epoch {epoch+1}/{self.n_iter} — "
+              f"cls_loss: {avg_cls_loss:.4f} — gen_loss: {avg_gen_loss:.4f} — "
+              f"total_loss: {avg_loss:.4f} — val_loss: {avg_val_loss:.4f} — "
+              f"time: {epoch_time:.1f}s")
 
             if self.checkpoint_dir:
                 self.save_checkpoint(epoch, avg_val_loss, filename="last.pt")
