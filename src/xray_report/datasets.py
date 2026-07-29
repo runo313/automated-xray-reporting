@@ -39,7 +39,7 @@ class CheXpertDataset(Dataset):
         try:
             image= Image.open(image_path).convert('RGB')
         except FileNotFoundError:
-            return self.__getitem__(idx +1)%len(self.df) # skip to next row
+            return self.__getitem__((idx +1) % len(self.df)) # skip to next row
         if self.transform:
             image = self.transform(image)
 
