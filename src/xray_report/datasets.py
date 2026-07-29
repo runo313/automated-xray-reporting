@@ -36,8 +36,10 @@ class CheXpertDataset(Dataset):
         raw_path = row['path_to_image']
         clean_path = raw_path.replace('train/', '', 1).replace('valid/', '', 1)
         image_path = f"{self.image_root}/{clean_path}"
-        image= Image.open(image_path).convert('RGB')
-
+        try:
+            image= Image.open(image_path).convert('RGB')
+        except FileNotFoundError:
+            return self.__getitem__(idx +1)%len(self.df) # skip to next row
         if self.transform:
             image = self.transform(image)
 
