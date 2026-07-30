@@ -61,6 +61,8 @@ class ClassifierFitModel:
                 loss = self.bce_loss(logits, labels, mask)
 
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_( list(self.encoder.parameters()) + 
+                                               list(self.classifier.parameters()),max_norm=1.0)
                 self.optimizer.step()
 
                 running_loss += loss.item()
