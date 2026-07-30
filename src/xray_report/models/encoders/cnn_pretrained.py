@@ -6,18 +6,22 @@ import torchvision.models as models
 from src.xray_report.models.encoders.base import BaseEncoder
 
 class PretrainedCNNEncoder(BaseEncoder, nn.Module):
-    def __init__(self):
+    def __init__(self,freeze_backbone=True):
         super().__init__()
-        resnet = torchvision.models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
-        self.backbone = nn.Sequential(*list(resnet.children())[:-2])
-        self.feature_dim = 2048
+        densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
+        self.backbone = densenet.features
+        self.feature_dim = 1024
         self.num_regions = 49
 
+        if freeze_backbone:
+            for param in self.backbone.parameters():
+                param.requires_grad = False
+
     def forward(self,images):
-        x = self.backbone(images) # (batch, 2048, 7, 7)
+        x = self.backbone(images) # (batch, 1024, 7, 7)
         batch_size = x.shape[0]
-        x=x.reshape(batch_size,self.feature_dim,self.num_regions) # (batch, 2048, 49)
-        spatial_output = x.permute(0, 2, 1) # (batch, 49, 2048)
-        pooled_output= spatial_output.mean(dim=1)  # (batch, 2048)
+        x=x.reshape(batch_size,self.feature_dim,self.num_regions) # (batch, 1024, 49)
+        spatial_output = x.permute(0, 2, 1) # (batch, 49, 1024)
+        pooled_output= spatial_output.mean(dim=1)  # (batch, 1024)
         return pooled_output, spatial_output
 

@@ -46,7 +46,7 @@ class ClassifierFitModel:
 
         for epoch in range(self.n_iter):
             epoch_start = time.time()
-            self.encoder.train()
+            self.encoder.eval()
             self.classifier.train()
             running_loss = 0.0
 
@@ -151,10 +151,9 @@ if __name__ == "__main__":
 
     bce_loss = MaskedBCELoss(pos_weight=pos_weight) # Pass pos_weight to MaskedBCELoss
 
-    optimizer = optim.Adam([
-        {'params': encoder.parameters(), 'lr': args.encoder_lr},
-        {'params': classifier.parameters(), 'lr': args.head_lr},
-    ])
+    # Pass only parameters that require gradients to the optimizer
+    trainable_params = [p for p in list(encoder.parameters()) + list(classifier.parameters()) if p.requires_grad]
+    optimizer = optim.Adam(trainable_params, lr=args.head_lr)
 
     trainer = ClassifierFitModel(
         n_iter=args.num_epochs,
