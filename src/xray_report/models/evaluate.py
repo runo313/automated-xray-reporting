@@ -160,7 +160,12 @@ if __name__ == "__main__":
     model = XRayReportModel(encoder, classifier, decoder).to(device)
 
     checkpoint = torch.load(args.checkpoint_path, map_location=device)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    if 'model_state_dict' in checkpoint:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    else:
+        model.encoder.load_state_dict(checkpoint['encoder_state_dict'])
+        model.classifier.load_state_dict(checkpoint['classifier_state_dict'])
+        print("Note: Loaded classifier-only checkpoint. Decoder weights remain uninitialized.")
     print(f"loaded checkpoint from epoch {checkpoint['epoch']}")
 
     cls_results = evaluate_classifier(model, loaders['test'], device, LABEL_COLS)
