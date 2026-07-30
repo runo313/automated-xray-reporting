@@ -6,7 +6,7 @@ import torchvision.models as models
 from src.xray_report.models.encoders.base import BaseEncoder
 
 class PretrainedCNNEncoder(BaseEncoder, nn.Module):
-    def __init__(self,freeze_backbone=True):
+    def __init__(self,freeze_backbone=False):
         super().__init__()
         densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
         self.backbone = densenet.features

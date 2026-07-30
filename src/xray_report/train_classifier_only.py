@@ -83,8 +83,8 @@ class ClassifierFitModel:
         print(f"Training complete in {time.time() - start_time:.1f}s")
 
     def validate(self):
-        self.encoder.eval()
-        self.classifier.eval()
+        self.encoder.train()
+        self.classifier.train()
         running_loss = 0.0
 
         with torch.no_grad():
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     loaders = build_dataloaders(df, args.image_root, vocab['token_to_idx'],
                                  batch_size=args.batch_size, num_workers=args.num_workers)
 
-    encoder = PretrainedCNNEncoder()
+    encoder = PretrainedCNNEncoder(freeze_backbone=False)
     classifier = ClassifierHead(feature_dim=encoder.feature_dim, num_labels=len(LABEL_COLS))
 
     # Calculate positive weights based on training set imbalance
@@ -153,7 +153,11 @@ if __name__ == "__main__":
 
     # Pass only parameters that require gradients to the optimizer
     trainable_params = [p for p in list(encoder.parameters()) + list(classifier.parameters()) if p.requires_grad]
-    optimizer = optim.Adam(trainable_params, lr=args.head_lr)
+   # Differential learning rates for backbone vs head
+    optimizer = optim.Adam([
+        {'params': encoder.parameters(), 'lr': args.encoder_lr}, # e.g. 1e-5
+        {'params': classifier.parameters(), 'lr': args.head_lr}, # e.g. 1e-3
+    ])
 
     trainer = ClassifierFitModel(
         n_iter=args.num_epochs,
