@@ -19,6 +19,7 @@ class PretrainedCNNEncoder(BaseEncoder, nn.Module):
 
     def forward(self,images):
         x = self.backbone(images) # (batch, 1024, 7, 7)
+        x = torch.relu(x)
         batch_size = x.shape[0]
         x=x.reshape(batch_size,self.feature_dim,self.num_regions) # (batch, 1024, 49)
         spatial_output = x.permute(0, 2, 1) # (batch, 49, 1024)
