@@ -1,34 +1,26 @@
-#!/usr/bin/env python3
 import torch
 import torch.nn as nn
-"""
-Multi-label findings classifier.
-Takes an encoder's pooled feature vector and produces one raw logit per finding.
-"""
+import torchxrayvision as xrv
+from src.xray_report.models.encoders.base import BaseEncoder
 
-class ClassifierHead(nn.Module):
-    def __init__(self, feature_dim, num_labels, hidden_dim=512, dropout=0.3):
-        """
-        feature_dim: Length of the pooled feature vector from the encoder.
-        num_labels: Number of findings to predict (14, in this project).
-        hidden_dim: Size of the intermediate hidden layer.
-        dropout: Dropout probability applied after the hidden layer.
-        """
+class PretrainedCNNEncoder(BaseEncoder, nn.Module):
+    def __init__(self, freeze_backbone=False):
         super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(feature_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim, num_labels),
-        )
-    def forward(self,pooled):
-        """
-        Args:
-            pooled: Tensor of shape (batch_size, feature_dim)
+        # Load DenseNet-121 pretrained specifically on CheXpert radiographs
+        self.densenet = xrv.models.DenseNet(weights="densenet121-res224-chex")
+        self.backbone = self.densenet.features
+        self.feature_dim = 1024
+        self.num_regions = 49
 
-        Returns:Tensor of shape (batch_size, num_labels), raw
-        (pre-sigmoid) scores — pass through BCEWithLogitsLoss
-        during training, or torch.sigmoid() at inference time.
-        """
-        return self.net(pooled)
-        
+        if freeze_backbone:
+            for param in self.backbone.parameters():
+                param.requires_grad = False
+
+    def forward(self, images):
+        x = self.backbone(images)           # (batch, 1024, 7, 7)
+        x = torch.relu(x)                   # DenseNet feature activation
+        batch_size = x.shape[0]
+        x = x.reshape(batch_size, self.feature_dim, self.num_regions)
+        spatial_output = x.permute(0, 2, 1)  # (batch, 49, 1024)
+        pooled_output = spatial_output.mean(dim=1)   # (batch, 1024)
+        return pooled_output, spatial_output
