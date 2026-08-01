@@ -18,8 +18,7 @@ the images themselves are fine. Every test here is label-free.
 Test 3 is the decisive one. If it passes, the images are fine and rebuilding
 the label pairing fixes everything.
 
-Usage (from the project root):
-    python3 check_images.py
+Claude Opus 4.6
 """
 
 import argparse

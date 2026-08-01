@@ -2,21 +2,15 @@
 """
 Are the CheXbert label JSON files aligned with their paths?
 
-Your notebook's merge is keyed on path_to_image and is correct. Yet two views
+Notebook's merge is keyed on path_to_image and is correct. Yet two views
 of one study end up with different labels, which is visible in the raw merge
 output. So the misalignment arrives from the label JSON itself, unless the
 assumption is wrong that views of one study share labels.
 
-This settles it using data you already have. CheXbert runs on report text. If
-two images share the SAME report string but get different labels, the label
+If two images share the SAME report string but get different labels, the label
 file is misaligned. That test needs no external ground truth.
 
-Run on your laptop, where the source files live:
-
-    python3 check_label_source.py \
-        --csv ~/Downloads/df_chexpert_plus_240401.csv \
-        --labels ~/Downloads/report_fixed.json \
-                 ~/Downloads/findings_fixed.json
+Claude Opus 4.6
 """
 
 import argparse
@@ -63,18 +57,14 @@ def agreement(df, group_key, label_cols, name):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--csv', required=True,
-                    help="df_chexpert_plus_240401.csv")
-    ap.add_argument('--labels', nargs='+', required=True,
-                    help="one or more chexbert_labels/*.json files")
-    ap.add_argument('--text-col', default='report',
-                    help="column holding the text CheXbert was run on")
+    ap.add_argument('--csv', required=True, help="df_chexpert_plus_240401.csv")
+    ap.add_argument('--labels', nargs='+', required=True,help="one or more chexbert_labels/*.json files")
+    ap.add_argument('--text-col', default='report',help="column holding the text CheXbert was run on")
     args = ap.parse_args()
 
     print("loading CSV...")
     usecols = ['path_to_image', 'frontal_lateral', args.text_col]
-    csv = pd.read_csv(args.csv, usecols=lambda c: c in usecols,
-                      low_memory=False)
+    csv = pd.read_csv(args.csv, usecols=lambda c: c in usecols, low_memory=False)
     print(f"  {len(csv)} rows\n")
 
     # ------------------------------------------------------ structure check

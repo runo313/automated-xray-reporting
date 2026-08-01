@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Rebuild the training parquet from a CheXbert label file that is actually
+Rebuild the training parquet from a CheXpert label file that is actually
 aligned with its paths.
 
 report_fixed.json is misaligned: within-study label disagreement is 92.4%
@@ -9,15 +9,15 @@ findings_fixed.json is clean at 0.3%. Check any candidate before trusting it.
 
 This script validates first and refuses to write if the label file fails.
 
-Screen every label file you have:
-    python3 rebuild_from_chexbert.py --csv ~/Downloads/df_chexpert_plus_240401.csv \
+Screen every label file you have: rebuild_from_chexpert.py 
+    python3 rebuild_parquet.py --csv ~/Downloads/df_chexpert_plus_240401.csv \
         --screen ~/Downloads/*.json
-
 Then build from whichever passed:
-    python3 rebuild_from_chexbert.py --csv ~/Downloads/df_chexpert_plus_240401.csv \
-        --label-json ~/Downloads/impression_fixed.json \
-        --text-col section_impression \
+    python3 rebuild_parquet.py --csv ~/Downloads/df_chexpert_plus_240401.csv \
+        --label-json ~/Downloads/impression_fixed.json 
+        --text-col section_impression 
         --out chexpert_plus_fixed.parquet
+Claude Opus 4.6
 """
 
 import argparse
@@ -127,17 +127,14 @@ def screen(paths, label_cols=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--csv', required=True)
-    ap.add_argument('--screen', nargs='*', default=None,
-                    help="screen these label files and exit")
+    ap.add_argument('--screen', nargs='*', default=None,help="screen these label files and exit")
     ap.add_argument('--label-json', default=None)
     ap.add_argument('--out', default='chexpert_plus_fixed.parquet')
     ap.add_argument('--text-col', default='section_impression')
     ap.add_argument('--frontal-only', action='store_true', default=True)
     ap.add_argument('--keep-laterals', dest='frontal_only', action='store_false')
-    ap.add_argument('--require-labels', action='store_true', default=True,
-                    help="drop rows where every label is blank")
-    ap.add_argument('--image-root', default=None,
-                    help="if set, drop rows whose image is not on disk")
+    ap.add_argument('--require-labels', action='store_true', default=True,help="drop rows where every label is blank")
+    ap.add_argument('--image-root', default=None,help="if set, drop rows whose image is not on disk")
     ap.add_argument('--val-frac', type=float, default=0.05)
     ap.add_argument('--test-frac', type=float, default=0.05)
     ap.add_argument('--seed', type=int, default=42)

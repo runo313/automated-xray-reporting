@@ -13,8 +13,9 @@ Two jobs.
    that to 0.33% at min_freq=5.
 
 Usage:
-    python3 rebuild_text.py --parquet data/chexpert_plus_fixed.parquet \
-                            --vocab-out data/vocab.pkl --min-freq 5
+    python3 rebuild_text.py --parquet data/chexpert_plus_fixed.parquet --vocab-out data/vocab.pkl --min-freq 5
+
+Claude Opus 4.6
 """
 
 import argparse
@@ -94,7 +95,7 @@ clinical-efficacy metrics (does the report state the right findings?)
 rather than on BLEU.
 
 Two options if this share is large:
-  - keep everything, report BLEU with the caveat, judge on CheXbert F1
+  - keep everything, report BLEU with the caveat, judge on CheXpert F1
   - add a filtered subset as a second evaluation slice, so you can show
     performance on the image-derivable portion separately
 Filtering the TRAINING set is a bigger call: it removes the examples that
@@ -165,14 +166,6 @@ def main():
         pickle.dump({'token_to_idx': t2i, 'idx_to_token': i2t}, f)
     print(f"wrote {args.vocab_out}")
 
-    print(f"""
-Now make these match, or the new vocab will not be used:
-
-  1. config.py:  DEFAULT_MAX_LEN = {args.max_len}
-  2. utils/vocabulary.py: replace tokenize() with the normalize + TOKEN_RE
-     version from this file. datasets.py calls it, so nothing else changes.
-  3. Delete stale caches: find . -name __pycache__ -exec rm -rf {{}} +
-""")
 
 
 if __name__ == '__main__':

@@ -14,9 +14,8 @@ with zero fine-tuning. If they do, the data pipeline is sound and the previous
 all-0.50 result was the normalization bug. If they don't, the problem is
 upstream of training.
 
-Usage (from the project root):
-    python3 sanity_check.py --parquet-path data/chexpert_plus_ready.parquet \
-                            --image-root data/images --split val --n 500
+Usage: python3 sanity_check.py --parquet-path data/chexpert_plus_ready.parquet --image-root data/images --split val --n 500
+Claude Opus 4.6
 """
 
 import argparse

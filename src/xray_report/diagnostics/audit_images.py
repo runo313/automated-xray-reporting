@@ -14,14 +14,11 @@ zero-shot AUC is at or below chance. Two hypotheses remain:
      study carry different labels.
 
 This runs both tests plus a visual export.
-
-Usage (from the project root):
-    python3 diagnose.py
+Claude Opus 4.6
 """
 
 import argparse
 import os
-
 import numpy as np
 import pandas as pd
 import torch

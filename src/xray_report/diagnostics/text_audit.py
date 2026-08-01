@@ -10,8 +10,8 @@ This measures what normalization buys before you commit to rebuilding
 anything, and prints the numbers needed to choose max_len and min_freq.
 
 Usage:
-    python3 text_audit.py --parquet data/chexpert_plus_fixed.parquet \
-                          --vocab data/vocab.pkl
+    python3 text_audit.py --parquet data/chexpert_plus_fixed.parquet  --vocab data/vocab.pkl
+Claude Opus 4.6
 """
 
 import argparse
