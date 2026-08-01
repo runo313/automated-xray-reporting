@@ -244,7 +244,7 @@ if __name__ == "__main__":
     print(f"test set: {len(loaders['test'].dataset)} examples")
 
     #encoder = PretrainedCNNEncoder()
-    encoder = RadDinoEncoder(freeze_backbone=args.freeze_backbone, pool_to=7)
+    encoder = RadDinoEncoder(pool_to=7)
     classifier = ClassifierHead(feature_dim=encoder.feature_dim,
                                 num_labels=len(LABEL_COLS))
 
