@@ -17,11 +17,9 @@ Changed from the original:
   - Added freeze_bn, so the CheXpert-estimated BatchNorm statistics can be kept
     while the convolutional weights still fine-tune.
 
-Place at: src/xray_report/models/encoders/cnn_pretrained.py
 """
 
 import warnings
-
 import torch
 import torch.nn as nn
 import torchxrayvision as xrv
@@ -93,8 +91,8 @@ class PretrainedCNNEncoder(BaseEncoder, nn.Module):
     def forward(self, images):
         self._verify_input(images)
 
-        x = self.backbone(images)              # (batch, 1024, H', W')
-        x = torch.relu(x)                      # matches xrv's own forward
+        x = self.backbone(images)  #(batch, 1024, H', W')
+        x = torch.relu(x) 
 
         batch_size, channels, h, w = x.shape
         if channels != self.feature_dim:

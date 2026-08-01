@@ -59,6 +59,7 @@ from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.decoders.rnn_attention import AttentionDecoder
 from src.xray_report.models.decoders.transformer_decoder import TransformerDecoder
 from src.xray_report.models.encoders.cnn_pretrained import PretrainedCNNEncoder
+from src.xray_report.models.encoders.vit_pretrained import RadDinoEncoder
 from src.xray_report.models.losses import MaskedCrossEntropyLoss
 from src.xray_report.utils.vocabulary import load_vocab
 
@@ -437,9 +438,10 @@ if __name__ == '__main__':
     # with the first N generated reports.
     val_df = df[df['split'] == 'val'].reset_index(drop=True)
 
-    # ------------------------------------------------------ model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    encoder = PretrainedCNNEncoder()
+    #encoder = PretrainedCNNEncoder()
+    encoder = RadDinoEncoder(pool_to=7)
+    
     classifier = ClassifierHead(feature_dim=encoder.feature_dim,
                                 num_labels=len(LABEL_COLS))
 

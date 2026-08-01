@@ -50,6 +50,7 @@ from src.xray_report.config import LABEL_COLS, encode_label_matrix
 from src.xray_report.eval.text_labeler import label_frame
 from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.encoders.cnn_pretrained import PretrainedCNNEncoder
+from src.xray_report.models.encoders.vit_pretrained import RadDinoEncoder
 
 SPLIT_PREFIXES = ('train/', 'valid/', 'val/', 'test/')
 
@@ -198,7 +199,8 @@ def encode(paths, image_root, encoder, device, batch_size=64, log_every=20000):
 
 def load_encoder(checkpoint_path, device):
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
-    encoder = PretrainedCNNEncoder()
+    #encoder = PretrainedCNNEncoder()
+    encoder = RadDinoEncoder(pool_to=7)
     encoder.load_state_dict(ckpt['encoder_state_dict'])
     encoder = encoder.to(device).eval()
 

@@ -37,6 +37,7 @@ from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.decoders.rnn_attention import AttentionDecoder
 from src.xray_report.models.decoders.transformer_decoder import TransformerDecoder
 from src.xray_report.models.encoders.cnn_pretrained import PretrainedCNNEncoder
+from src.xray_report.models.encoders.vit_pretrained import RadDinoEncoder
 from src.xray_report.models.model import XRayReportModel
 from src.xray_report.utils.vocabulary import decode, load_vocab
 
@@ -242,7 +243,8 @@ if __name__ == "__main__":
                                 num_workers=args.num_workers)
     print(f"test set: {len(loaders['test'].dataset)} examples")
 
-    encoder = PretrainedCNNEncoder()
+    #encoder = PretrainedCNNEncoder()
+    encoder = RadDinoEncoder(freeze_backbone=args.freeze_backbone, pool_to=7)
     classifier = ClassifierHead(feature_dim=encoder.feature_dim,
                                 num_labels=len(LABEL_COLS))
 

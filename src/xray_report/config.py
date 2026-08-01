@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 """
 Shared config and the single source of truth for label encoding.
-
-The label policy lives here because datasets.py and losses.py both need it and
-must not drift. The original bug: datasets.py treated blank as a confident
-negative while compute_pos_weight counted only explicit zeros, so positives on
-rare findings were under-weighted by roughly an order of magnitude.
-
-Place at: src/xray_report/config.py
 """
 
 import sys
@@ -26,7 +19,6 @@ DEFAULT_MAX_LEN = 50
 DEFAULT_MIN_FREQ = 5
 DEFAULT_IMAGE_SIZE = 224
 
-# --------------------------------------------------------------- label policy
 
 # What to do with a blank / NaN entry, meaning the labeler found no mention.
 #   'negative' - treat as a confident 0. CheXpert convention. Keeps the matrix

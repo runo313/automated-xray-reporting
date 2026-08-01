@@ -1,27 +1,16 @@
 #!/usr/bin/env python3
 """
 Classifier-only training: encoder + classifier head, no decoder.
-
-Changed from the original:
-  - fit() no longer calls encoder.eval() while training it, and validate() no
-    longer calls .train(). The original ran validation with dropout active and
-    BatchNorm in training mode, which updates running statistics from val data
-    even under torch.no_grad().
   - Validation now reports macro AUC, not just loss. Loss alone cannot
     distinguish a working model from one that has learned only the base rates,
     which is exactly what hid the previous failure for five epochs.
   - Best checkpoint is selected on val AUC. On imbalanced multi-label data, BCE
     loss and ranking quality diverge.
-  - The dead trainable_params list is gone; the optimizer now actually receives
-    filtered parameter groups.
   - Checkpoints record the run directory, args, label order, and metrics, so
     evaluation can verify it loaded the model it thinks it did.
   - A first-batch diagnostic prints input range and feature variance before
     training starts. Both failure modes from the previous run are visible here
     within seconds instead of after 90 minutes.
-  - Optional mixed precision, which roughly halves epoch time on a T4.
-
-Place at: src/xray_report/train_classifier_only.py
 """
 
 import argparse
@@ -39,6 +28,7 @@ from src.xray_report.config import LABEL_COLS, redirect_output
 from src.xray_report.dataloader import build_dataloaders
 from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.encoders.cnn_pretrained import PretrainedCNNEncoder
+from src.xray_report.models.encoders.vit_pretrained import RadDinoEncoder
 from src.xray_report.models.losses import MaskedBCELoss, compute_pos_weight
 from src.xray_report.utils.vocabulary import load_vocab
 
@@ -94,13 +84,13 @@ class ClassifierFitModel:
 
         self.history = []
 
-    # ------------------------------------------------------------- diagnostics
+    # diagnostics
 
     def preflight(self):
         """
         Verify the data actually reaches the model in usable form.
 
-        Three checks, all of which the previous run would have failed silently:
+        Three checks:
         input range, per-image variance, and whether encoder features differ
         across images at all.
         """
@@ -145,7 +135,6 @@ class ClassifierFitModel:
 
         print("preflight passed\n")
 
-    # ------------------------------------------------------------- train loop
 
     def fit(self):
         self.preflight()
@@ -173,9 +162,7 @@ class ClassifierFitModel:
                 self.scaler.scale(loss).backward()
                 self.scaler.unscale_(self.optimizer)
                 torch.nn.utils.clip_grad_norm_(
-                    [p for g in self.optimizer.param_groups for p in g['params']],
-                    max_norm=1.0,
-                )
+                    [p for g in self.optimizer.param_groups for p in g['params']], max_norm=1.0,)
                 self.scaler.step(self.optimizer)
                 self.scaler.update()
 
@@ -269,12 +256,8 @@ class ClassifierFitModel:
         print(f"saved checkpoint: {path}")
 
 
-# ------------------------------------------------------------------- main
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Classifier-only pretraining (encoder + classifier head)."
-    )
+    parser = argparse.ArgumentParser(description="Classifier-only pretraining (encoder + classifier head).")
     parser.add_argument('--parquet-path', required=True)
     parser.add_argument('--vocab-path', required=True)
     parser.add_argument('--image-root', required=True)
@@ -288,13 +271,10 @@ if __name__ == "__main__":
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--random-state', type=int, default=42)
     parser.add_argument('--freeze-backbone', action='store_true')
-    parser.add_argument('--freeze-bn', action='store_true',
-                        help="Keep CheXpert BatchNorm stats while fine-tuning weights.")
+    parser.add_argument('--freeze-bn', action='store_true',help="Keep CheXpert BatchNorm stats while fine-tuning weights.")
     parser.add_argument('--no-augment', action='store_true')
-    parser.add_argument('--amp', action='store_true',
-                        help="Mixed precision. Roughly halves epoch time on a T4.")
-    parser.add_argument('--train-subsample', type=int, default=None,
-                        help="Cap training rows for fast iteration.")
+    parser.add_argument('--amp', action='store_true',help="Mixed precision. Roughly halves epoch time on a T4.")
+    parser.add_argument('--train-subsample', type=int, default=None, help="Cap training rows for fast iteration.")
     args = parser.parse_args()
 
     os.makedirs(args.log_dir, exist_ok=True)
@@ -318,10 +298,11 @@ if __name__ == "__main__":
           f"val={len(loaders['val'].dataset)} "
           f"test={len(loaders['test'].dataset)}")
 
-    encoder = PretrainedCNNEncoder(
-        freeze_backbone=args.freeze_backbone,
-        freeze_bn=args.freeze_bn,
-    )
+    # encoder = PretrainedCNNEncoder(
+    #     freeze_backbone=args.freeze_backbone,
+    #     freeze_bn=args.freeze_bn,
+    # )
+    encoder = RadDinoEncoder(freeze_backbone=args.freeze_backbone, pool_to=7)
     classifier = ClassifierHead(
         feature_dim=encoder.feature_dim,
         num_labels=len(LABEL_COLS),

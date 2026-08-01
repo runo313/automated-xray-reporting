@@ -15,8 +15,6 @@ Changed from the original:
   - MaskedBCELoss keeps its original normalisation, which was already correct:
     dividing by mask.sum() rather than numel() makes losses comparable across
     batches with different amounts of masking.
-
-Place at: src/xray_report/models/losses.py
 """
 
 import numpy as np
