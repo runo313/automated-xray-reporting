@@ -1,0 +1,20 @@
+{
+  "_source": "tuned on 3000 val images in template_baseline.py, see logs/ for the run",
+  "_note": "threshold is the sigmoid probability above which a finding is called positive",
+  "thresholds": {
+    "Enlarged Cardiomediastinum": 0.675,
+    "Cardiomegaly": 0.675,
+    "Lung Opacity": 0.425,
+    "Lung Lesion": 0.775,
+    "Edema": 0.475,
+    "Consolidation": 0.675,
+    "Pneumonia": 0.800,
+    "Atelectasis": 0.475,
+    "Pneumothorax": 0.650,
+    "Pleural Effusion": 0.425,
+    "Pleural Other": 0.725,
+    "Fracture": 0.700,
+    "Support Devices": 0.275,
+    "No Finding": 0.725
+  }
+}
