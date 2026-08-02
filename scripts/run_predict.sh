@@ -32,6 +32,6 @@ python3 -m src.xray_report.inference.predict \
     --classifier-checkpoint checkpoints/cls_raddino_frozen/best.pt \
     --decoder-checkpoint checkpoints/dec_raddino_both/best.pt \
     --parquet-path data/chexpert_plus_fixed.parquet \
-    --show-reference > results/samples.txt
+    --show-reference > results/samples1.txt
 
 echo "wrote results/samples.txt"
