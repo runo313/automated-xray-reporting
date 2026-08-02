@@ -18,8 +18,7 @@
 # inference/predict.py before running this against RAD-DINO checkpoints.
 
 set -e
-cd "$(dirname "$0")/.."
-mkdir -p results
+cd /home/runosiakpebru/automated-xray-reporting
 
 # Three test-set images. Replace with any paths under data/images.
 cat > /tmp/sample_images.txt <<'EOF'
@@ -33,7 +32,6 @@ python3 -m src.xray_report.inference.predict \
     --classifier-checkpoint checkpoints/cls_raddino_frozen/best.pt \
     --decoder-checkpoint checkpoints/dec_raddino_both/best.pt \
     --parquet-path data/chexpert_plus_fixed.parquet \
-    --image-root data/images \
     --show-reference > results/samples.txt
 
 echo "wrote results/samples.txt"
