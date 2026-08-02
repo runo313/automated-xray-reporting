@@ -36,6 +36,7 @@ from src.xray_report.models.classifier_head import ClassifierHead
 from src.xray_report.models.decoders.rnn_attention import AttentionDecoder
 from src.xray_report.models.decoders.transformer_decoder import TransformerDecoder
 from src.xray_report.models.encoders.cnn_pretrained import PretrainedCNNEncoder
+from src.xray_report.models.encoders.vit_pretrained import RadDinoEncoder
 from src.xray_report.utils.vocabulary import load_vocab
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -75,8 +76,8 @@ def load_image(path):
 
 def load_classifier(checkpoint_path, device):
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
-
-    encoder = PretrainedCNNEncoder()
+    encoder = RadDinoEncoder(pool_to=7)
+    #encoder = PretrainedCNNEncoder()
     encoder.load_state_dict(ckpt['encoder_state_dict'])
     encoder = encoder.to(device).eval()
 
