@@ -1,20 +1,20 @@
 {
-  "_source": "tuned on 3000 val images in template_baseline.py, see logs/ for the run",
+  "_source": "tuned on 3000 val images via template_baseline.py against checkpoints/cls_raddino_frozen/best.pt (RAD-DINO, frozen backbone)",
   "_note": "threshold is the sigmoid probability above which a finding is called positive",
   "thresholds": {
-    "Enlarged Cardiomediastinum": 0.675,
-    "Cardiomegaly": 0.675,
-    "Lung Opacity": 0.425,
-    "Lung Lesion": 0.775,
+    "Enlarged Cardiomediastinum": 0.725,
+    "Cardiomegaly": 0.550,
+    "Lung Opacity": 0.400,
+    "Lung Lesion": 0.625,
     "Edema": 0.475,
     "Consolidation": 0.675,
-    "Pneumonia": 0.800,
-    "Atelectasis": 0.475,
-    "Pneumothorax": 0.650,
-    "Pleural Effusion": 0.425,
+    "Pneumonia": 0.775,
+    "Atelectasis": 0.450,
+    "Pneumothorax": 0.700,
+    "Pleural Effusion": 0.500,
     "Pleural Other": 0.725,
-    "Fracture": 0.700,
-    "Support Devices": 0.275,
-    "No Finding": 0.725
+    "Fracture": 0.750,
+    "Support Devices": 0.350,
+    "No Finding": 0.825
   }
 }
