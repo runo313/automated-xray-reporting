@@ -18,16 +18,16 @@
 #   eval_decoder.py        --checkpoint --test-size --no-shuffle-control
 
 set -e
-cd "$(dirname "$0")/.."
-mkdir -p results
+cd /home/runosiakpebru/automated-xray-reporting
 
 # --- classifier ------------------------------------------------------------
 # This script redirects its own stdout into logs/, so copy the log it wrote.
-python3 -m src.xray_report.eval.evaluate_classifier \
-    --checkpoint-path checkpoints/cls_raddino_frozen/best.pt \
+python3 -m src.xray_report.inference.predict \
+    --image-list /tmp/sample_images.txt \
+    --classifier-checkpoint checkpoints/cls_raddino_frozen/best.pt \
+    --decoder-checkpoint checkpoints/dec_raddino_both/best.pt \
     --parquet-path data/chexpert_plus_fixed.parquet \
-    --vocab-path data/vocab.pkl \
-    --image-root data/images
+    --show-reference > results/samples.txt
 cp "$(ls -t logs/eval_* | head -1)" results/classifier.txt
 
 # --- decoder ---------------------------------------------------------------

@@ -16,7 +16,7 @@
 #   --amp, --train-subsample, --num-epochs, --batch-size
 
 set -e
-cd "$(dirname "$0")/.."
+cd /home/runosiakpebru/automated-xray-reporting
 
 CONDITION="${1:-both}"
 

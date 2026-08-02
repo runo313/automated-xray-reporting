@@ -18,8 +18,7 @@
 # inference/predict.py before running this against RAD-DINO checkpoints.
 
 set -e
-cd "$(dirname "$0")/.."
-mkdir -p results
+cd /home/runosiakpebru/automated-xray-reporting
 
 # Three test-set images. Replace with any paths under data/images.
 cat > /tmp/sample_images.txt <<'EOF'
