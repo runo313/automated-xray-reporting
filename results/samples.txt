@@ -1,0 +1,111 @@
+
+=== Chest X-Ray Report ===
+Image: data/images/patient19460/study1/view1_frontal.png
+
+Structured Findings (classifier):
+  Lung Opacity                 POSITIVE  (p=0.63)
+  Atelectasis                  POSITIVE  (p=0.52)
+  Pneumothorax                 POSITIVE  (p=0.84)
+  Pleural Effusion             POSITIVE  (p=0.97)
+  [10 more findings negative]
+
+Generated Impression (decoder):
+  1 . interval removal of the right - sided chest tube . no pneumothorax . 2 . persistent bibasilar opacities and bilateral pleural effusions . i have personally reviewed the images for this examination and agreed with the report transcribed above .
+
+--- Reference (ground truth, image is in the dataset) ---
+split: test
+Reference impression:
+  
+ 
+1.  Right greater than left moderate pleural effusions with adjacent 
+basilar airspace opacity which may represent atelectasis versus 
+aspiration or consolidation.
+ 
+ 
+ 
+Addendum Ends
+RADIOGRAPHIC EXAMINATION OF THE CHEST: 2014-9
+ 
+CLINICAL HISTORY: 68 years of age, Male, H/o pleural effusions.
+ 
+COMPARISON: None.
+ 
+PROCEDURE COMMENTS: Single view of the chest. 
+ 
+FINDINGS:
+ 
+Right greater than left moderate pleural effusions with adjacent 
+basilar airspace opacity which may represent atelectasis versus 
+aspiration or consolidation. No pneumothorax. Cardiomediastinal 
+silhouette is within normal size limits. No acute osseous abnormality.
+ 
+IMPRESSION:
+ 
+1.  Right greater than left moderate pleural effusions with adjacent 
+basilar airspace opacity which may represent atelectasis versus 
+aspiration or consolidation.
+ 
+ 
+ 
+I have personally reviewed the images for this examination and agreed
+with the report transcribed above.
+ 
+
+Reference positive findings: Lung Opacity, Pleural Effusion
+
+
+=== Chest X-Ray Report ===
+Image: data/images/patient17829/study5/view1_frontal.png
+
+Structured Findings (classifier):
+  Lung Opacity                 POSITIVE  (p=0.62)
+  Edema                        POSITIVE  (p=0.50)
+  Atelectasis                  POSITIVE  (p=0.59)
+  Pleural Effusion             POSITIVE  (p=0.77)
+  Support Devices              POSITIVE  (p=0.56)
+  [9 more findings negative]
+
+Generated Impression (decoder):
+  1 . interval placement of a tunneled right internal jugular hemodialysis catheter with the tip in the right atrium . no pneumothorax . 2 . stable appearance of the chest with redemonstration of bibasilar opacities and small bilateral pleural effusions .
+
+--- Reference (ground truth, image is in the dataset) ---
+split: test
+Reference impression:
+   
+ 
+ 1.  SINGLE FRONTAL VIEW OF THE CHEST DONE ON 7/19/2004 AT 1037 
+DEMONSTRATES A RIGHT IJ LOCATED WITHIN THE RIGHT ATRIUM.  THERE IS A 
+RIGHT PLEURAL EFFUSION, SMALL.  RIGHT BASE OPACITY IS SEEN AS LINEAR 
+OPACITIES.  THERE IS NO PULMONARY EDEMA.  STABLE CARDIOMEDIASTINAL 
+SILHOUETTE.  
+ 
+ 
+Reference positive findings: Lung Opacity, Pleural Effusion, Support Devices
+
+
+=== Chest X-Ray Report ===
+Image: data/images/patient18068/study3/view1_frontal.png
+
+Structured Findings (classifier):
+  Support Devices              POSITIVE  (p=0.84)
+  No Finding                   POSITIVE  (p=0.89)
+  [12 more findings negative]
+
+Generated Impression (decoder):
+  1 . single frontal view of the chest demonstrates interval placement of a left upper extremity picc line with its tip at the cavoatrial junction . 2 . the lungs are clear without evidence of focal consolidation , pleural effusions , or pulmonary edema . 3 . the
+
+--- Reference (ground truth, image is in the dataset) ---
+split: test
+Reference impression:
+  
+ 
+1.SINGLE FRONTAL VIEW OF THE CHEST DEMONSTRATES INTERVAL PLACEMENT OF 
+A LEFT UPPER EXTREMITY PICC WITH THE TIP 2.7 CM BELOW THE CARINA.  
+CARDIOMEDIASTINAL SILHOUETTE IS OTHERWISE WITHIN NORMAL LIMITS.
+ 
+2.LUNGS ARE CLEAR WITHOUT EVIDENCE OF FOCAL CONSOLIDATION, PULMONARY 
+EDEMA, OR PLEURAL FLUID.
+ 
+
+Reference positive findings: Support Devices, No Finding
+

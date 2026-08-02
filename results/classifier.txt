@@ -1,0 +1,34 @@
+device: cuda
+
+--- checkpoint ---
+path:        checkpoints/cls_raddino_frozen/best.pt
+epoch:       5
+saved at:    2026-08-01 16:32:48
+written by:  checkpoints/cls_raddino_frozen
+best val AUC:0.8136840182882048
+------------------
+
+test set: 9229 examples
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/223 [00:00<?, ?it/s]Loading weights: 100%|██████████| 223/223 [00:00<00:00, 6031.39it/s]
+classifier-only checkpoint: decoder weights are uninitialized
+
+=== Classifier results (per label) ===
+label                              AUC      F1  base F1   prev       n
+----------------------------------------------------------------------
+Enlarged Cardiomediastinum       0.752   0.203    0.066  0.034    8601
+Cardiomegaly                     0.867   0.530    0.247  0.141    9229
+Lung Opacity                     0.722   0.705    0.645  0.476    9215
+Lung Lesion                      0.782   0.260    0.064  0.033    9181
+Edema                            0.840   0.668    0.486  0.321    9229
+Consolidation                    0.741   0.233    0.120  0.064    9229
+Pneumonia                        0.838   0.242    0.044  0.023    8415
+Atelectasis                      0.702   0.553    0.479  0.315    9229
+Pneumothorax                     0.896   0.536    0.154  0.083    9098
+Pleural Effusion                 0.858   0.767    0.616  0.445    9229
+Pleural Other                    0.817   0.172    0.026  0.013    9140
+Fracture                         0.786   0.270    0.082  0.043    9216
+Support Devices                  0.875   0.845    0.713  0.554    9227
+No Finding                       0.882   0.490    0.160  0.087    9229
+
+macro AUC: 0.8111
