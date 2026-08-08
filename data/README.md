@@ -1,33 +1,27 @@
 # Datasets
 
-## 1. IU X-Ray (Open-I Indiana University Chest X-Ray Collection)
-- Purpose: paired image + free-text report data for the decoder (Layer 3)
-- Source: NIH Open-I service
-- Access: open, no credentialing required
-- Status: NOT YET DOWNLOADED
-- S3 location (once uploaded): s3://<bucket>/raw/iu-xray/
+## CheXpert Plus (Stanford AIMI)
 
-## 2. CheXpert (Stanford ML Group)
-- Purpose: multi-label findings annotations for the findings classifier (Layer 2)
-- Source: Stanford ML Group
-- Access: requires free registration (email + research-use license agreement),
-  self-serve, fast approval
-- Status: NOT YET REGISTERED
-- S3 location (once uploaded): s3://<bucket>/raw/chexpert/
+- Purpose: paired chest X-ray images, radiology report text, and multi-label
+  target annotations. Used for both the clinical classifier  and
+  the report decoder.
+- Source: Stanford AIMI, via Redivis
+- Status: used. See `src/xray_report/data/` for the download and parquet
+  build scripts.
 
-## 3. NIH ChestX-ray14
-- Purpose: large unlabeled/weakly-labeled image pool for self-supervised
-  pretraining of the encoder
-- Source: NIH Clinical Center (also mirrored on Kaggle / Box)
-- Access: open, no credentialing required
-- Status: NOT YET DOWNLOADED
-- S3 location (once uploaded): s3://<bucket>/raw/chestxray14/
+**Citation:**
 
-## 4. MIMIC-CXR (optional upgrade path, not committed to)
-- Purpose: larger/higher-quality paired image-report alternative to IU X-Ray
-- Source: PhysioNet
-- Access: requires CITI human-subjects training + PhysioNet credentialing
-  (can take days to weeks) - submit request early if pursuing this
-- Status: NOT REQUESTED YET
+[1] Stanford AIMI, "CheXpert Plus," ver. 1.0, Redivis, 2026. [Online].
+    Available: https://doi.org/10.57761/fzna-pm76
 
 
+## Data Location
+
+Processed images, parquet files, vocabulary, and checkpoints are stored in
+Google Cloud Storage:
+
+```
+gs://runo-cxr-data/
+```
+
+Images: https://storage.googleapis.com/runo-cxr-data/images.tar
